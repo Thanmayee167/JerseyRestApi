@@ -1,0 +1,20 @@
+# Compiled class files
+*.class
+
+# Log files
+*.log
+
+# IntelliJ and Eclipse project files
+.idea/
+*.iml
+.classpath
+.project
+.settings/
+
+# Build and dependency directories
+/target/
+/bin/
+/out/
+
+# Environment variables
+.env
