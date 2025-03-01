@@ -2,7 +2,10 @@ package com.thanmayee.restapi;
 
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.codehaus.jackson.map.annotate.JsonRootName;
+
 @XmlRootElement
+@JsonRootName(value = "alien")
 public class Alien {
 	private int id;
 	private String name;

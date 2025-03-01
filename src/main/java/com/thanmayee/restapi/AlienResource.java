@@ -15,26 +15,25 @@ import javax.ws.rs.core.MediaType;
 @Path("/aliens")
 public class AlienResource {
 
-	AlienRepository alienRepository = AlienRepository.getInstance();
+	private AlienRepository alienRepository = AlienRepository.getInstance();
 
 	@GET
-	@Produces(MediaType.APPLICATION_XML)
-
+	@Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON }) // Supports XML & JSON
 	public List<Alien> getAliens() {
 		return alienRepository.getAliens();
 	}
 
 	@GET
 	@Path("/alien/{id}")
-	@Produces(MediaType.APPLICATION_XML)
+	@Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON }) // Supports XML & JSON
 	public Alien getAlien(@PathParam("id") int id) {
 		return alienRepository.getAlien(id);
 	}
 
 	@POST
 	@Path("/alien")
-	@Produces(MediaType.APPLICATION_XML)
-	@Consumes(MediaType.APPLICATION_XML)
+	@Consumes({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON }) // Accepts XML & JSON
+	@Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON }) // Returns XML & JSON
 	public Alien createAlien(Alien alien) {
 		alienRepository.addAlien(alien);
 		return alien;
@@ -42,8 +41,8 @@ public class AlienResource {
 
 	@PUT
 	@Path("/alien")
-	@Produces(MediaType.APPLICATION_XML)
-	@Consumes(MediaType.APPLICATION_XML)
+	@Consumes({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON }) // Accepts XML & JSON
+	@Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON }) // Returns XML & JSON
 	public Alien updateAlien(Alien alien) {
 		alienRepository.updateAlien(alien);
 		return alien;
@@ -51,10 +50,9 @@ public class AlienResource {
 
 	@DELETE
 	@Path("/alien/{id}")
-	@Produces(MediaType.APPLICATION_XML)
+	@Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON }) // Supports XML & JSON
 	public String deleteAlien(@PathParam("id") int id) {
 		alienRepository.deleteAlien(id);
-		return "<message>Alien deleted successfully</message>";
+		return "{\"message\": \"Alien deleted successfully\"}"; // JSON response by default
 	}
-
 }

@@ -1,32 +1,28 @@
 package com.thanmayee.restapi;
 
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
 public class AlienRepository {
 
 	private static AlienRepository instance;
-	private List<Alien> aliens;
+	private Connection conn;
 
 	private AlienRepository() {
-		aliens = new ArrayList<>();
-
-		// Sample data
-		Alien alien = new Alien();
-		alien.setId(1);
-		alien.setName("Sai");
-		alien.setColour("Green");
-
-		Alien alien1 = new Alien();
-		alien1.setId(2);
-		alien1.setName("Thanmayee");
-		alien1.setColour("Yellow");
-
-		aliens.add(alien);
-		aliens.add(alien1);
+		try {
+			Class.forName("com.mysql.cj.jdbc.Driver");
+			conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/mydatabase", "root", "password");
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
-	// Singleton method
 	public static AlienRepository getInstance() {
 		if (instance == null) {
 			instance = new AlienRepository();
@@ -35,28 +31,72 @@ public class AlienRepository {
 	}
 
 	public List<Alien> getAliens() {
+		List<Alien> aliens = new ArrayList<>();
+		try {
+			Statement stmt = conn.createStatement();
+			ResultSet rs = stmt.executeQuery("SELECT * FROM aliens");
+
+			while (rs.next()) {
+				Alien alien = new Alien();
+				alien.setId(rs.getInt("id"));
+				alien.setName(rs.getString("name"));
+				alien.setColour(rs.getString("colour"));
+				aliens.add(alien);
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
 		return aliens;
 	}
 
 	public Alien getAlien(int id) {
-		return aliens.stream().filter(alien -> alien.getId() == id).findAny().orElse(new Alien());
+		Alien alien = new Alien();
+		try {
+			PreparedStatement stmt = conn.prepareStatement("SELECT * FROM aliens WHERE id = ?");
+			stmt.setInt(1, id);
+			ResultSet rs = stmt.executeQuery();
+
+			if (rs.next()) {
+				alien.setId(rs.getInt("id"));
+				alien.setName(rs.getString("name"));
+				alien.setColour(rs.getString("colour"));
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return alien;
 	}
 
 	public void addAlien(Alien alien) {
-		aliens.add(alien);
+		try {
+			PreparedStatement stmt = conn.prepareStatement("INSERT INTO aliens (name, colour) VALUES (?, ?)");
+			stmt.setString(1, alien.getName());
+			stmt.setString(2, alien.getColour());
+			stmt.executeUpdate();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
 	}
 
 	public void updateAlien(Alien alien) {
-        for (Alien value : aliens) {
-            if (value.getId() == alien.getId()) {
-                value.setName(alien.getName());
-                value.setColour(alien.getColour());
-                return;
-            }
-        }
-	}
-	public void deleteAlien(int id) {
-		aliens.removeIf(alien -> alien.getId() == id);
+		try {
+			PreparedStatement stmt = conn.prepareStatement("UPDATE aliens SET name = ?, colour = ? WHERE id = ?");
+			stmt.setString(1, alien.getName());
+			stmt.setString(2, alien.getColour());
+			stmt.setInt(3, alien.getId());
+			stmt.executeUpdate();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
 	}
 
+	public void deleteAlien(int id) {
+		try {
+			PreparedStatement stmt = conn.prepareStatement("DELETE FROM aliens WHERE id = ?");
+			stmt.setInt(1, id);
+			stmt.executeUpdate();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
 }
