@@ -4,9 +4,9 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement
 public class Alien {
-	int id;
-	String name;
-	String colour;
+	private int id;
+	private String name;
+	private String colour;
 
 	public int getId() {
 		return id;
